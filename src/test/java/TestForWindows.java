@@ -4,34 +4,32 @@ import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.Duration;
 import java.util.Set;
 
-public class TestsForWindows {
+public class TestForWindows {
 
-    private final org.apache.logging.log4j.Logger logger= LogManager.getLogger(TestsForWindows.class);
+    private final org.apache.logging.log4j.Logger logger= LogManager.getLogger(TestForWindows.class);
     private ChromeOptions options;
-    private WebDriver driver;
+    private static WebDriver driver;
 
-    String headlessText = "Онлайн‑курсы для профессионалов, дистанционное обучение";
+    String headlessText = "Онлайн‑курсы для профессионалов, дистанционное обучение современным ...";
 
-    @BeforeEach
-    public void setUp(){
+    @BeforeAll
+    public static void setUp(){
         WebDriverManager.chromedriver().setup();
 
     }
 
-    @AfterEach
-    public void startDown(){
+    @AfterAll
+    public static void startDown(){
         if(driver != null){driver.quit();}
     }
 
-    /**
-     * Тест падает в ошибку, так как сторка, выдаваемая поисковиком длиннее. Нужно подправить ожидаемый текст или так и задуманно?
-     */
     @Test
     public void openChromeInHeadlees(){
         options = new ChromeOptions();
@@ -63,26 +61,34 @@ public class TestsForWindows {
         driver = new ChromeDriver();
         driver.manage().window().fullscreen();
         driver.get("https://otus.ru");
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(3));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
         auth();
     }
     private void auth(){
         driver.findElement(By.cssSelector(".header2__auth")).click();
+        WebElement form = driver.findElement(By.xpath("//form[@action = '/login/']"));
+        WebElement inputEmail = form.findElement(By.xpath(".//input[@name = 'email']"));
+        WebElement inputPassword = form.findElement(By.xpath(".//input[@name = 'password']"));
 //        driver.findElement(By.cssSelector("[name= 'email'")).sendKeys(System.getProperty("email"));
 //        driver.findElement(By.cssSelector(".js-psw-input")).sendKeys(System.getProperty("pass"));
 //        driver.findElement(By.cssSelector("[type = submit]")).submit();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
-        /**
-         * не смог подобрать CSS
-         */
-        driver.findElement(By.xpath("//form[@action = '/login/']//input[@name = 'email']")).sendKeys(System.getProperty("email"));
-        driver.findElement(By.xpath("//form[@action = '/login/']//input[@name = 'password']")).sendKeys(System.getProperty("pass"));
-        driver.findElement(By.xpath("//form[@action = '/login/']//button[@type = 'submit']")).submit();
+
+        inputEmail.sendKeys(System.getProperty("username"));
+//        driver.findElement(By.xpath("//form[@action = '/login/']//input[@name = 'email']")).sendKeys(System.getProperty("email"));
+        inputPassword.sendKeys(System.getProperty("password"));
+//        driver.findElement(By.xpath("//form[@action = '/login/']//button[@type = 'submit']")).submit();
         Set<Cookie> cookies =driver.manage().getCookies();
-        logger.info(cookies.toString());
+        printCookie(cookies);
         Assertions.assertNotNull(cookies);
         Assertions.assertNotEquals(0,cookies.size());
 
+    }
+
+    private void printCookie(Set<Cookie> cookies){
+        for (Cookie c:cookies) {
+            logger.info(String.format("cookie name=%s and value=%s",c.getName(),c.getValue()));
+        }
     }
 
 }

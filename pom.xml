@@ -61,8 +61,8 @@
         <version>3.0.0-M7</version>
             <configuration>
                 <systemPropertyVariables>
-                    <email>juli77_07@mail.ru</email>
-                    <pass>D65100e90*</pass>
+                    <username></username>
+                    <password></password>
                 </systemPropertyVariables>
             </configuration>
         </plugin>
