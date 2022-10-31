@@ -15,7 +15,7 @@ public class TestForWindows {
 
     private final org.apache.logging.log4j.Logger logger= LogManager.getLogger(TestForWindows.class);
     private ChromeOptions options;
-    private static WebDriver driver;
+    private WebDriver driver;
 
     String headlessText = "Онлайн‑курсы для профессионалов, дистанционное обучение современным ...";
 
@@ -25,9 +25,9 @@ public class TestForWindows {
 
     }
 
-    @AfterAll
-    public static void startDown(){
-        if(driver != null){driver.quit();}
+    @AfterEach
+    public void startDown(){
+        if(driver != null){driver.close();driver.quit();}
     }
 
     @Test
@@ -39,8 +39,9 @@ public class TestForWindows {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(3));
         driver.findElement(By.id("search_form_input_homepage")).sendKeys("ОТУС");
         driver.findElement(By.id("search_button_homepage")).submit();
-        Assertions.assertEquals(headlessText,driver.findElement(By.cssSelector("#r1-0 h2 span")).getText());
-        System.out.println(driver.findElement(By.cssSelector("#r1-0 h2 span")).getText());
+        WebElement text = driver.findElement(By.cssSelector("#r1-0 h2 span"));
+        Assertions.assertEquals(headlessText,text.getText());
+        System.out.println(text.getText());
     }
 
     @Test
@@ -77,7 +78,7 @@ public class TestForWindows {
         inputEmail.sendKeys(System.getProperty("username"));
 //        driver.findElement(By.xpath("//form[@action = '/login/']//input[@name = 'email']")).sendKeys(System.getProperty("email"));
         inputPassword.sendKeys(System.getProperty("password"));
-//        driver.findElement(By.xpath("//form[@action = '/login/']//button[@type = 'submit']")).submit();
+        driver.findElement(By.xpath("//form[@action = '/login/']//button[@type = 'submit']")).submit();
         Set<Cookie> cookies =driver.manage().getCookies();
         printCookie(cookies);
         Assertions.assertNotNull(cookies);
